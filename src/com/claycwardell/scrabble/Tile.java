@@ -29,6 +29,10 @@ public class Tile {
         this.isPlaced = false;
     }
 
+    public Boolean getIsPlaced() {
+        return this.isPlaced;
+    }
+
     public Integer getScore() {
         return this.constants.getLetterScore(this.ch);
     }

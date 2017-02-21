@@ -3,6 +3,8 @@ package com.claycwardell.scrabble;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
+import java.util.ArrayList;
+
 /**
  * Created by Clay on 2/20/17.
  */

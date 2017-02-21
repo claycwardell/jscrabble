@@ -6,7 +6,7 @@ package com.claycwardell.scrabble;
 
 public class Scrabble {
     public static void main(String[] args) {
-        TrieNode rootNode = TrieNode.bootTrie();
+
 
     }
 }

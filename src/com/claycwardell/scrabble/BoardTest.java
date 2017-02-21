@@ -6,6 +6,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+
 
 public class BoardTest {
 
@@ -102,12 +104,34 @@ public class BoardTest {
     }
 
     @Test
+    public void testPlayOnSquare() {
+
+        ArrayList<Tile> tiles = new ArrayList<>();
+        tiles.add(new Tile('C'));
+        tiles.add(new Tile('A'));
+        tiles.add(new Tile('T'));
+
+        Player clay = new Player();
+        System.out.println(clay.getTiles());
+        this.board.checkAllSquares(clay.getTiles());
+        System.out.println(this.board);
+
+    }
+
+    @Test
+    public void testGetWordForSquare() {
+        Square square = this.board.getSquare(7, 5);
+        System.out.println(square);
+        System.out.print(this.board.getWordFromSquare(square));
+    }
+
+    @Test
     public void testGetSquareArray() {
         assertEquals(this.board.getSquareArray().size(), 15*15);
     }
 
-    @Test
-    public void testRotate() {
-        System.out.print(this.board.getRotatedBoard());
-    }
+//    @Test
+//    public void testRotate() {
+//        System.out.print(this.board.getRotatedBoard());
+//    }
 }

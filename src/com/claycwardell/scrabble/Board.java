@@ -18,63 +18,40 @@ public class Board {
                 this.square_matrix[i][j] = new Square(j, i);
             }
         }
-
-//        for (int i=0; i<this.height; i++) {
-//            for (int j = 0; j < this.width; j++) {
-//                Square left = null;
-//                Square top = null;
-//                Square right = null;
-//                Square bottom = null;
-//
-//                if (i>0) {
-//                    top = this.square_matrix[i-1][j];
-//                }
-//                if (i < this.height-1) {
-//                    bottom = this.square_matrix[i+1][j];
-//                }
-//                if (j > 0) {
-//                    left = this.square_matrix[i][j-1];
-//                }
-//
-//                if (j < this.width-1 ) {
-//                    right = this.square_matrix[i][j+1];
-//                }
-//
-//                this.square_matrix[i][j].setEdges(left, top, right, bottom);
-//            }
-//        }
-
     }
 
     public Square left(Square square) {
-        if (square.getX() < 1) {
-            throw new RuntimeException(String.format("No square to left of %s", square));
+        if (square.getX() <= 1) {
+//            throw new RuntimeException(String.format("No square to left of %s", square));
+            return null;
         }
         return this.getSquare(square.getX()-1, square.getY());
     }
 
     public Square right(Square square) {
-        if (square.getX() > this.getWidth()-1) {
-            throw new RuntimeException(String.format("No square to right of %s", square));
+        if (square.getX() >= this.getWidth()-1) {
+//            throw new RuntimeException(String.format("No square to right of %s", square));
+            return null;
         }
         return this.getSquare(square.getX()+1, square.getY());
     }
 
     public Square above(Square square) {
-        if (square.getY() < 1) {
-            throw new RuntimeException(String.format("No square above %s", square));
+        if (square.getY() <= 1) {
+//            throw new RuntimeException(String.format("No square above %s", square));
+            return null;
         }
         return this.getSquare(square.getX(), square.getY()-1);
 
     }
 
     public Square below(Square square) {
-        if (square.getY() > this.height-1) {
-            throw new RuntimeException(String.format("No square below %s", square));
+        if (square.getY() >= this.height-1) {
+//            throw new RuntimeException(String.format("No square below %s", square));
+            return null;
         }
         return this.getSquare(square.getX(), square.getY()+1);
     }
-
 
 
     public ArrayList<Square> getSquareArray() {
@@ -121,9 +98,89 @@ public class Board {
             int y = i / board.getWidth();
             int x = i % board.getWidth();
 
-            board.placeTile(x, y, new Tile(ch));
+            board.playTile(x, y, new Tile(ch));
         }
         return board;
+
+    }
+
+    public Word getWordFromSquare(Square square) {
+        if (square.getTile() == null) {
+            return null;
+        }
+        Square pointer = square;
+        ArrayList<Square> word = new ArrayList<>();
+
+        while (pointer != null && pointer.getTile() != null) {
+            word.add(0, pointer);
+            pointer = this.left(pointer);
+        }
+
+        if (square.getX() < this.width-1) {
+            pointer = this.right(square);
+
+            while (pointer != null && pointer.getTile() != null) {
+                word.add(pointer);
+                pointer = this.right(pointer);
+            }
+        }
+
+        return new Word(word);
+    }
+
+    public ArrayList<Word> checkAllSquares(ArrayList<Tile> tiles) {
+        ArrayList<Word> legalWordList = new ArrayList<Word>();
+        for (Square square : this.getSquareArray()) {
+            this.playOnSquare(square, tiles, legalWordList);
+        }
+        return legalWordList;
+
+    }
+
+    public void playOnSquare(Square square, ArrayList<Tile> tiles, ArrayList<Word> legalWordList) {
+        if (square.getTile() != null) {
+            return;
+        }
+
+
+        this.buildFromSquare(legalWordList, square, tiles);
+        System.out.println(legalWordList);
+
+    }
+
+    private void buildFromSquare(ArrayList<Word> legalMoveList, Square square, ArrayList<Tile> tiles) {
+        if (square == null) {
+            return;
+        }
+
+        if (square.getTile() != null) {
+            this.buildFromSquare(legalMoveList, this.right(square), tiles);
+        }
+
+
+        for (int i=0; i<tiles.size(); i++) {
+            if (square.getTile() != null) {
+                return;
+            }
+            square.setTile(tiles.get(i));
+            Word currentWord = this.getWordFromSquare(square);
+            if (currentWord.hasNode()){
+                if (currentWord.wordIsValid()) {
+                    legalMoveList.add(currentWord);
+                }
+                ArrayList<Tile> unplacedTiles = new ArrayList<Tile>();
+                for (Tile tile : tiles) {
+                    if (!tile.getIsPlaced()) {
+                        unplacedTiles.add(tile);
+                    }
+                }
+                this.buildFromSquare(legalMoveList, this.right(square), unplacedTiles);
+            }
+            if (!square.isFrozen()) {
+                square.popTile();
+            }
+
+        }
 
 
     }
@@ -145,12 +202,16 @@ public class Board {
 
     public void placeTile(int x, int y, Tile tile) {
         Square square = this.getSquare(x, y);
+
         square.setTile(tile);
     }
 
-//    public void removeTile(int x, int y) {
-//
-//    }
+    public void playTile(int x, int y, Tile tile) {
+        Square square = this.getSquare(x, y);
+        square.setTile(tile);
+        square.freeze();
+    }
+
 
 
 }

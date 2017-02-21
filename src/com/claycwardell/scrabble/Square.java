@@ -1,5 +1,7 @@
 package com.claycwardell.scrabble;
 
+import java.util.ArrayList;
+
 /**
  * Created by Clay on 2/18/17.
  */
@@ -38,7 +40,6 @@ public class Square {
     public Boolean isFrozen(){
         return this.frozen;
     }
-
 
     public void freeze() {
         if (this.tile == null) {
@@ -88,7 +89,11 @@ public class Square {
 
 
     public void setTile(Tile tile) {
+        if (this.tile != null){
+            throw new RuntimeException("Square is taken!");
+        }
         this.tile = tile;
+        tile.placeTile();
     }
 
     public Tile getTile() {
@@ -101,6 +106,7 @@ public class Square {
         }
         Tile tile = this.tile;
         this.tile = null;
+        tile.unPlaceTile();
         return tile;
     }
 

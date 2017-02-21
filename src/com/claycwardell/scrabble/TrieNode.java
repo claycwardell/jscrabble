@@ -106,12 +106,11 @@ public class TrieNode {
         return restOfString;
     }
 
-    static TrieNode loadWordList(ArrayList<String> wordList){
-        TrieNode rootNode = new TrieNode(null, null);
+    private void loadWordList(ArrayList<String> wordList){
         for (String word : wordList) {
-            rootNode.loadString(word);
+            this.loadString(word);
         }
-        return rootNode;
+
     }
 
     static ArrayList<String> readWordListFromFile(String filename) {
@@ -131,10 +130,28 @@ public class TrieNode {
         return list;
     }
 
-    static TrieNode bootTrie() {
-        return TrieNode.loadWordList(TrieNode.readWordListFromFile("resources/enable.txt"));
+    public void bootTrie() {
+        this.loadWordList(TrieNode.readWordListFromFile("resources/enable.txt"));
     }
 
+
+}
+
+class TrieRoot extends TrieNode {
+    static private TrieRoot root;
+
+
+    private TrieRoot(){
+        super(null, null);
+    }
+
+    public static TrieRoot getInstance(){
+        if (root == null) {
+            root = new TrieRoot();
+            root.bootTrie();
+        }
+        return root;
+    }
 
 }
 

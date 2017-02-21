@@ -18,7 +18,8 @@ public class TrieNodeTest {
 
     @Test
     public void testBoot() {
-        TrieNode rootNode = TrieNode.bootTrie();
+        TrieRoot rootNode = TrieRoot.getInstance();
+        rootNode.bootTrie();
         assertNotNull(rootNode.getNodeForString("incredib"));
         assertNull(rootNode.getNodeForString("asfasdfasdfasdfasdfasdfasdfasdfs"));
         assertTrue(rootNode.getNodeForString("incredible").getIsTerminal());

@@ -14,4 +14,8 @@ public class Player {
         this.tiles = TileBag.getInstance().drawTiles(this.gameConstants.tilesPerHand);
     }
 
+    public ArrayList<Tile> getTiles() {
+        return this.tiles;
+    }
+
 }
