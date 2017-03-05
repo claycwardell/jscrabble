@@ -20,6 +20,10 @@ public class Board {
         }
     }
 
+    public Square[][] getMatrix() {
+        return this.square_matrix;
+    }
+
     public Square left(Square square) {
         if (square.getX() <= 1) {
 //            throw new RuntimeException(String.format("No square to left of %s", square));
@@ -74,18 +78,27 @@ public class Board {
 
     public Board getRotatedBoard() {
         Board board = new Board();
-        board.rotatedAndInjectMatrix(this.square_matrix);
+        board.rotatedAndInjectMatrix(this.square_matrix, false);
         return board;
     }
 
     public void rotateBoard() {
-        this.rotatedAndInjectMatrix(this.square_matrix);
+        Board board = new Board();
+        board.rotatedAndInjectMatrix(this.square_matrix, true);
+        this.square_matrix = board.getMatrix();
     }
 
-    public void rotatedAndInjectMatrix(Square[][] square_matrix) {
+    public void rotatedAndInjectMatrix(Square[][] square_matrix, Boolean rotateInPlace) {
         for (int i=0; i<square_matrix.length; i++) {
             for (int j = 0; j < square_matrix[i].length; j++) {
-                this.square_matrix[i][j] = square_matrix[j][i].getRotatedCopy();
+                Square otherSquare = square_matrix[j][i];
+                if (rotateInPlace) {
+                    otherSquare.rotate();
+
+                } else {
+                    otherSquare = otherSquare.getRotatedCopy();
+                }
+                this.square_matrix[i][j] = otherSquare;
             }
         }
     }
@@ -106,6 +119,15 @@ public class Board {
         }
         return board;
 
+    }
+
+    public Boolean isFirstTurn() {
+        for (Square square : this.getSquareArray()) {
+            if (square.isFrozen()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public Word getWordFromSquare(Square square, Boolean allowMiddleOut) {
@@ -134,7 +156,11 @@ public class Board {
             }
         }
 
-        return new Word(word);
+        if (this.isFirstTurn()) {
+            return new FirstWord(word);
+        } else {
+            return new Word(word);
+        }
     }
 
     public Word getBestWord(ArrayList<Tile> tiles) {
@@ -142,6 +168,14 @@ public class Board {
         for (Square square : this.getSquareArray()) {
             this.playOnSquare(square, tiles, legalWordList);
         }
+
+        this.rotateBoard();
+
+        for (Square square : this.getSquareArray()) {
+            this.playOnSquare(square, tiles, legalWordList);
+        }
+
+        this.rotateBoard();
 
         Integer highest = 0;
         Word highestWord = null;
@@ -165,7 +199,7 @@ public class Board {
                     score = -1;
                     break;
                 } else {
-                    System.out.printf("%s -- %d\n", word, word.getScore());
+//                    System.out.printf("%s -- %d\n", word, word.getScore());
                     score += word.getScore();
                 }
             }
@@ -194,7 +228,7 @@ public class Board {
 
 
 
-        System.out.println(legalWordList);
+//        System.out.println(legalWordList);
 
     }
 
@@ -212,7 +246,8 @@ public class Board {
             if (square.getTile() != null) {
                 return;
             }
-            square.setTile(tiles.get(i));
+            Tile currentTile = tiles.get(i);
+            square.setTile(currentTile);
             Word currentWord = this.getWordFromSquare(square, true);
             if (currentWord.hasNode()){
                 if (currentWord.wordIsValidToPlay()) {

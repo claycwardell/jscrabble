@@ -11,6 +11,9 @@ public class GameConstants {
     public final Integer tilesPerHand = 7;
     public final Integer playersPerGame = 2;
 
+    public final String allowedCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
+    public final String morphableCharacters = allowedCharacters.replace(" ", "");
+
 
     public GameConstants() {
 

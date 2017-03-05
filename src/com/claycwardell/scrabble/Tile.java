@@ -9,8 +9,9 @@ package com.claycwardell.scrabble;
 public class Tile {
     private Character ch;
     private final GameConstants constants = new GameConstants();
-    private final String allowed = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
+    private final String allowed = constants.allowedCharacters;
     private Boolean isPlaced;
+    private Boolean isBlank;
 
     public Tile(Character ch) {
         if (this.allowed.indexOf(ch) < 0) {
@@ -18,6 +19,11 @@ public class Tile {
         }
         this.ch = ch;
         this.isPlaced = false;
+        if (ch == ' ') {
+            this.isBlank = true;
+        } else {
+            this.isBlank = false;
+        }
 
     }
 
@@ -34,7 +40,7 @@ public class Tile {
     }
 
     public Integer getScore() {
-        return this.constants.getLetterScore(this.ch);
+        return (this.isBlank) ? 0 : this.constants.getLetterScore(this.ch);
     }
 
     public Character getCh() {
@@ -42,6 +48,18 @@ public class Tile {
     }
 
     public String toString() {
-        return " " + this.getCh().toString() + " ";
+        String chString = (this.isBlank) ? " " : this.getCh().toString();
+        return " " + chString + " ";
+    }
+
+    public void morph(Character ch) {
+        if (!this.isBlank && ch != this.ch) {
+            throw new RuntimeException("Cannot morph a non-blank tile");
+        }
+        this.ch = ch;
+    }
+
+    public Boolean getIsBlank(){
+        return this.isBlank;
     }
 }

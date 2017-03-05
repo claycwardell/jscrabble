@@ -104,14 +104,14 @@ public class BoardTest {
     }
 
     @Test
-    public void testPlayOnSquare() {
+    public void testGetBestWord() {
 
         ArrayList<Tile> tiles = new ArrayList<>();
         tiles.add(new Tile('C'));
         tiles.add(new Tile('A'));
         tiles.add(new Tile('T'));
 
-        Player clay = new Player();
+        Player clay = new Player("Clay");
         System.out.println(clay.getTiles());
         Word word = this.board.getBestWord(clay.getTiles());
         System.out.println(this.board);
@@ -119,6 +119,18 @@ public class BoardTest {
         System.out.println(this.board);
         System.out.println(String.format("%s -- %d, %d", word, word.getScore(), word.getCombinedScore()));
 
+    }
+
+    @Test
+    public void testFirstPlay() {
+        Player clay = new Player("Clay");
+        this.board = new Board();
+        System.out.println(clay.getTiles());
+        Word word = this.board.getBestWord(clay.getTiles());
+        System.out.println(this.board);
+        word.play();
+        System.out.println(this.board);
+        System.out.println(String.format("%s -- %d, %d", word, word.getScore(), word.getCombinedScore()));
     }
 
     @Test
@@ -139,8 +151,18 @@ public class BoardTest {
         assertEquals(this.board.getSquareArray().size(), 15*15);
     }
 
-//    @Test
-//    public void testRotate() {
-//        System.out.print(this.board.getRotatedBoard());
-//    }
+    @Test
+    public void testRotateBoard(){
+        System.out.print(this.board+"\n\n");
+        this.board.rotateBoard();
+        System.out.print(this.board+"\n\n");
+        this.board.rotateBoard();
+        System.out.print(this.board);
+    }
+
+    @Test
+    public void testGetRotated() {
+        System.out.print(this.board + "\n\n");
+        System.out.print(this.board.getRotatedBoard());
+    }
 }

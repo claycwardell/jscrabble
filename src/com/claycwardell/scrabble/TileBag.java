@@ -31,11 +31,18 @@ public class TileBag {
     }
 
     public ArrayList<Tile> drawTiles(int num_to_draw) {
+
         ArrayList<Tile> ret = new ArrayList<Tile>();
-        for (int i=0; i<num_to_draw; i++) {
+        int limit = Math.min(num_to_draw, this.getTilesRemaining());
+
+        for (int i=0; i<limit; i++) {
             ret.add(this.tiles.remove(this.tiles.size()-1));
         }
         return ret;
+    }
+
+    public int getTilesRemaining() {
+        return this.tiles.size();
     }
 
 }

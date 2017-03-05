@@ -6,8 +6,8 @@ import java.util.ArrayList;
  * Created by Clay on 2/20/17.
  */
 public class Word {
-    private ArrayList<Square> squares = new ArrayList<>();
-    private ArrayList<Tile> tiles =  new ArrayList<>();
+    protected ArrayList<Square> squares = new ArrayList<>();
+    protected ArrayList<Tile> tiles =  new ArrayList<>();
     private final TrieRoot root = TrieRoot.getInstance();
     private Integer combinedScore = 0;
 
@@ -110,6 +110,10 @@ public class Word {
 
     }
 
+    public ArrayList<Tile> getTiles(){
+        return this.tiles;
+    }
+
     public void play() {
         for (int i=0; i < this.squares.size(); i++){
             Square square = this.squares.get(i);
@@ -118,5 +122,27 @@ public class Word {
                 square.playTile(tile);
             }
         }
+    }
+}
+
+
+class FirstWord extends Word {
+    public FirstWord(ArrayList<Square> squares) {
+        super(squares);
+    }
+
+    public Boolean wordIsValidToPlay() {
+        Boolean ret = false;
+        for (Square square : this.squares) {
+            if (square.getX() == 7 && square.getY() == 7) {
+                ret = true;
+            }
+        }
+        return (ret && super.wordIsValidToPlay());
+
+    }
+
+    public Boolean isNewlyPlayed() {
+        return true;
     }
 }

@@ -86,6 +86,13 @@ public class Square {
 
     }
 
+    public void rotate() {
+        Integer x = this.x;
+        Integer y = this.y;
+        this.x = y;
+        this.y = x;
+    }
+
 //    public void setEdges(Square left, Square top, Square right, Square bottom) {
 //        if (this.left != null || this.right != null || this.top != null || this.bottom != null) {
 //            throw new RuntimeException("Can only set edges for a square once");
