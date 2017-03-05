@@ -9,6 +9,7 @@ public class Word {
     private ArrayList<Square> squares = new ArrayList<>();
     private ArrayList<Tile> tiles =  new ArrayList<>();
     private final TrieRoot root = TrieRoot.getInstance();
+    private Integer combinedScore = 0;
 
     public Word(ArrayList<Square> squares) {
         for (Square square: squares) {
@@ -20,34 +21,34 @@ public class Word {
         }
     }
 
-//    public Integer getScore() {
-//        Integer score = 0;
-//    }
-
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        for (Tile tile : tiles) {
-            builder.append(tile.getCh());
-        }
-        return builder.toString();
-    }
-
-    private TrieNode getNode(){
-        return this.root.getNodeForString(this.toString());
-    }
-
-    public Boolean hasNode() {
-        TrieNode node = this.getNode();
-        return (node != null);
-    }
-
-    public Boolean wordIsValid() {
-        TrieNode node = this.getNode();
-        if (node == null){
-            return false;
+    public Integer getScore() {
+        Integer score = 0;
+        Integer wordMult = 1;
+        if (!this.isNewlyPlayed() || this.length() == 1) {
+            return score;
         }
 
-        if (!node.getIsTerminal()) {
+        for (Square square : this.squares) {
+            score += square.getScore();
+            if (!square.isFrozen()) {
+                wordMult *= square.getWordMult();
+            }
+        }
+
+        return score*wordMult;
+
+    }
+
+    public void setCombinedScore(Integer combinedScore) {
+        this.combinedScore = combinedScore;
+    }
+
+    public Integer getCombinedScore() {
+        return this.combinedScore;
+    }
+
+    public Boolean isNewlyPlayed() {
+        if (this.length() < 2) {
             return false;
         }
 
@@ -65,7 +66,57 @@ public class Word {
         }
 
         return (have_frozen && have_not_frozen);
+    }
 
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for (Tile tile : tiles) {
+            builder.append(tile.getCh());
+        }
+        return builder.toString();
+    }
 
+    public Integer length() {
+        return this.squares.size();
+    }
+
+    private TrieNode getNode(){
+        return this.root.getNodeForString(this.toString());
+    }
+
+    public Boolean hasNode() {
+        TrieNode node = this.getNode();
+        return (node != null);
+    }
+
+    public Boolean wordIsValidToPlay() {
+        return (this.wordIsValid() && this.isNewlyPlayed());
+    }
+
+    public Boolean wordIsValid() {
+        if (this.length() == 1) {
+            return true;
+        }
+        TrieNode node = this.getNode();
+        if (node == null){
+            return false;
+        }
+
+        if (!node.getIsTerminal()) {
+            return false;
+        }
+
+        return true;
+
+    }
+
+    public void play() {
+        for (int i=0; i < this.squares.size(); i++){
+            Square square = this.squares.get(i);
+            Tile tile = this.tiles.get(i);
+            if (!square.isFrozen()) {
+                square.playTile(tile);
+            }
+        }
     }
 }

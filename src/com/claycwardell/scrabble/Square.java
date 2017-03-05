@@ -11,6 +11,9 @@ public class Square {
     private Integer x;
     private Integer y;
 
+    private Integer wordMult;
+    private Integer letterMult;
+
     private Square left;
     private Square top;
     private Square right;
@@ -27,6 +30,28 @@ public class Square {
         this.frozen = false;
         this.x = x;
         this.y = y;
+        this.wordMult = 1;
+        this.letterMult = 1;
+    }
+
+    public Integer getWordMult() {
+        return this.wordMult;
+    }
+
+    public Integer getLetterMult() {
+        return this.letterMult;
+    }
+
+    public Integer getScore() {
+        Integer score = this.getTile().getScore();
+
+        if (!this.isFrozen()) {
+            score *= this.letterMult;
+        }
+
+        return score;
+
+
     }
 
     public Integer getX() {
@@ -108,6 +133,11 @@ public class Square {
         this.tile = null;
         tile.unPlaceTile();
         return tile;
+    }
+
+    public void playTile(Tile tile) {
+        this.setTile(tile);
+        this.freeze();
     }
 
 }

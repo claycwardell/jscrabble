@@ -113,8 +113,11 @@ public class BoardTest {
 
         Player clay = new Player();
         System.out.println(clay.getTiles());
-        this.board.checkAllSquares(clay.getTiles());
+        Word word = this.board.getBestWord(clay.getTiles());
         System.out.println(this.board);
+        word.play();
+        System.out.println(this.board);
+        System.out.println(String.format("%s -- %d, %d", word, word.getScore(), word.getCombinedScore()));
 
     }
 
@@ -122,7 +125,13 @@ public class BoardTest {
     public void testGetWordForSquare() {
         Square square = this.board.getSquare(7, 5);
         System.out.println(square);
-        System.out.print(this.board.getWordFromSquare(square));
+        System.out.print(this.board.getWordFromSquare(square, true));
+    }
+
+    @Test
+    public void testValidateAllSquares() {
+        System.out.print(this.board);
+        this.board.validateWholeBoard(false);
     }
 
     @Test

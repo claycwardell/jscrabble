@@ -78,6 +78,10 @@ public class Board {
         return board;
     }
 
+    public void rotateBoard() {
+        this.rotatedAndInjectMatrix(this.square_matrix);
+    }
+
     public void rotatedAndInjectMatrix(Square[][] square_matrix) {
         for (int i=0; i<square_matrix.length; i++) {
             for (int j = 0; j < square_matrix[i].length; j++) {
@@ -104,10 +108,15 @@ public class Board {
 
     }
 
-    public Word getWordFromSquare(Square square) {
+    public Word getWordFromSquare(Square square, Boolean allowMiddleOut) {
         if (square.getTile() == null) {
             return null;
         }
+
+        if (!allowMiddleOut && !(this.left(square) == null || this.left(square).getTile() == null)) {
+            return null;
+        }
+
         Square pointer = square;
         ArrayList<Square> word = new ArrayList<>();
 
@@ -128,12 +137,49 @@ public class Board {
         return new Word(word);
     }
 
-    public ArrayList<Word> checkAllSquares(ArrayList<Tile> tiles) {
+    public Word getBestWord(ArrayList<Tile> tiles) {
         ArrayList<Word> legalWordList = new ArrayList<Word>();
         for (Square square : this.getSquareArray()) {
             this.playOnSquare(square, tiles, legalWordList);
         }
-        return legalWordList;
+
+        Integer highest = 0;
+        Word highestWord = null;
+        for (Word word : legalWordList) {
+            if (word.getCombinedScore() > highest) {
+                highest = word.getCombinedScore();
+                highestWord = word;
+            }
+        }
+
+        return highestWord;
+
+    }
+
+    public Integer validateWholeBoard(Boolean rotated) {
+        Integer score = 0;
+        for (Square square : this.getSquareArray()) {
+            Word word = this.getWordFromSquare(square, false);
+            if (word != null) {
+                if (!word.wordIsValid()) {
+                    score = -1;
+                    break;
+                } else {
+                    System.out.printf("%s -- %d\n", word, word.getScore());
+                    score += word.getScore();
+                }
+            }
+
+        }
+        if (score >= 0 && !rotated) {
+            Integer new_score = this.getRotatedBoard().validateWholeBoard(true);
+            if (new_score < 0) {
+                score = -1;
+            } else {
+                score += new_score;
+            }
+        }
+        return score;
 
     }
 
@@ -142,8 +188,12 @@ public class Board {
             return;
         }
 
-
         this.buildFromSquare(legalWordList, square, tiles);
+//        Board rotated = this.getRotatedBoard();
+//        rotated.buildFromSquare(legalWordList, rotated.getSquare(square.getY(), square.getX()), tiles);
+
+
+
         System.out.println(legalWordList);
 
     }
@@ -163,10 +213,16 @@ public class Board {
                 return;
             }
             square.setTile(tiles.get(i));
-            Word currentWord = this.getWordFromSquare(square);
+            Word currentWord = this.getWordFromSquare(square, true);
             if (currentWord.hasNode()){
-                if (currentWord.wordIsValid()) {
-                    legalMoveList.add(currentWord);
+                if (currentWord.wordIsValidToPlay()) {
+
+                    Integer score = this.validateWholeBoard(false);
+                    if (score > 0) {
+
+                        currentWord.setCombinedScore(score);
+                        legalMoveList.add(currentWord);
+                    }
                 }
                 ArrayList<Tile> unplacedTiles = new ArrayList<Tile>();
                 for (Tile tile : tiles) {
